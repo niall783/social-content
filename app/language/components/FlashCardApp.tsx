@@ -140,7 +140,8 @@ const FlashCardApp: React.FC = () => {
   return (
     <div className="w-full max-w-md space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Flash Cards</h2>
+
+        <h2 className="text-2xl font-bold text-gray-800">Flash Cards for Niall</h2>
         <div className="space-x-2">
           <Button onClick={toggleMode} variant="outline" ariaLabel="Toggle language mode">
             <ArrowsRightLeftIcon className="h-5 w-5" />
