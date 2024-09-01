@@ -67,6 +67,7 @@ const FileList: React.FC = () => {
     setIsDeleteModalOpen(false);
     setFileToDelete(null);
   };
+  
 
   const handleDelete = async (): Promise<void> => {
     if (!fileToDelete) return;
