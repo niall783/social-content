@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
       throw new Error(`OpenAI API responded with status ${transcribeResponse.status}`);
     }
 
+    
     const data = await transcribeResponse.json();
 
     // Save the transcription to a new file in S3
