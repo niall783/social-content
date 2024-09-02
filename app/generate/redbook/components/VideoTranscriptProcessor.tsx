@@ -1,0 +1,286 @@
+'use client'
+
+
+import React, { useState } from 'react';
+import { ClipboardIcon } from '@heroicons/react/24/outline';
+
+interface Tag {
+  name: string;
+}
+
+interface GeneratedContent {
+  title: string;
+  description: string;
+  tags: Tag[];
+}
+
+const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, ...props }) => (
+  <button
+    {...props}
+    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    {children}
+  </button>
+);
+
+const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
+  <textarea
+    {...props}
+    className="w-full text-black p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+  />
+);
+
+const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div className="bg-white shadow-md rounded-lg overflow-hidden">
+    <div className="px-4 py-5 sm:px-6">
+      <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
+    </div>
+    <div className="px-4 py-5 sm:p-6">{children}</div>
+  </div>
+);
+
+const CopyButton: React.FC<{ text: string }> = ({ text }) => {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(text);
+    // alert('Copied to clipboard!');
+  };
+
+  return (
+    <button
+      onClick={copyToClipboard}
+      className="p-1 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    >
+      <ClipboardIcon className="h-5 w-5 text-gray-500" />
+    </button>
+  );
+};
+
+const VideoTranscriptProcessor: React.FC = () => {
+  const [transcript, setTranscript] = useState<string>('');
+  const [prompt, setPrompt] = useState<string>(
+    `Please generate a short video title (5-10 characters), an engaging description, and 3-5 relevant tags for a Little Red Book post based on the following video transcript. All content should be in Chinese. No markdown in your response.`
+  
+
+);
+  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/generate-video-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: `${prompt}\n\n${transcript}` }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate content');
+
+      const data: GeneratedContent = await response.json();
+      setGeneratedContent(data);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to generate content. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Edit the prompt here..."
+          rows={5}
+        />
+        <Textarea
+          value={transcript}
+          onChange={(e) => setTranscript(e.target.value)}
+          placeholder="Paste your video transcript here..."
+          rows={5}
+        />
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Generating...' : 'Generate Content'}
+        </Button>
+      </form>
+
+      {generatedContent && (
+        <div className="mt-8 space-y-4">
+          <Card title="Title (Chinese)">
+            <div className="flex justify-between items-center">
+              <p className="text-gray-700">{generatedContent.title}</p>
+              <CopyButton text={generatedContent.title} />
+            </div>
+          </Card>
+
+          <Card title="Description (Chinese)">
+            <div className="flex justify-between items-center">
+              <p className="text-gray-700">{generatedContent.description}</p>
+              <CopyButton text={generatedContent.description} />
+            </div>
+          </Card>
+
+          <Card title="Tags (Chinese)">
+            <div className="grid grid-cols-2 gap-4">
+              {generatedContent.tags.map((tag, index) => (
+                <div key={index} className="bg-gray-100 p-2 rounded relative">
+                  <p className="text-gray-700 pr-8">{tag.name}</p>
+                  <div className="absolute top-1 right-1">
+                    <CopyButton text={tag.name} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default VideoTranscriptProcessor;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 'use client'
+
+// import React, { useState } from 'react';
+
+// interface GeneratedContent {
+//   title: string;
+//   description: string;
+//   tags: string;
+// }
+
+// const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, ...props }) => (
+//   <button
+//     {...props}
+//     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+//   >
+//     {children}
+//   </button>
+// );
+
+// const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
+//   <textarea
+//     {...props}
+//     className="w-full text-black p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//   />
+// );
+
+// const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+//   <div className="bg-white shadow-md rounded-lg overflow-hidden">
+//     <div className="px-4 py-5 sm:px-6">
+//       <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
+//     </div>
+//     <div className="px-4 py-5 sm:p-6">{children}</div>
+//   </div>
+// );
+
+// const VideoTranscriptProcessor: React.FC = () => {
+//   const [transcript, setTranscript] = useState<string>('');
+//   const [prompt, setPrompt] = useState<string>(
+//     `Please generate a short title (5-10 characters), a description (50-100 characters), and 5-8 relevant tags for a Little Red Book post based on the following video transcript. All content should be in Chinese:`
+//   );
+//   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
+//   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+
+//     try {
+//       const response = await fetch('/api/generate-video-info', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ prompt: `${prompt}\n\n${transcript}` }),
+//       });
+
+//       if (!response.ok) throw new Error('Failed to generate content');
+
+//       const data: GeneratedContent = await response.json();
+
+//       setGeneratedContent(data);
+
+
+//     } catch (error) {
+//       console.error('Error:', error);
+//       alert('Failed to generate content. Please try again.');
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   const copyToClipboard = (text: string) => {
+//     navigator.clipboard.writeText(text);
+//     alert('Copied to clipboard!');
+//   };
+
+//   return (
+//     <div className="container mx-auto p-4">
+//       <form onSubmit={handleSubmit} className="space-y-4">
+//         <Textarea
+//           value={prompt}
+//           onChange={(e) => setPrompt(e.target.value)}
+//           placeholder="Edit the prompt here..."
+//           rows={5}
+//         />
+//         <Textarea
+//           value={transcript}
+//           onChange={(e) => setTranscript(e.target.value)}
+//           placeholder="Paste your video transcript here..."
+//           rows={5}
+//         />
+//         <Button type="submit" disabled={isLoading}>
+//           {isLoading ? 'Generating...' : 'Generate Content'}
+//         </Button>
+//       </form>
+
+//       {generatedContent && (
+//         <div className="mt-8 space-y-4">
+//           <Card title="Title (Chinese)">
+//             <p className="text-gray-700">{generatedContent.title}</p>
+//             <Button onClick={() => copyToClipboard(generatedContent.title)} className="mt-2">
+//               Copy
+//             </Button>
+//           </Card>
+
+        
+
+//           <Card title="Description (Chinese)">
+//             <p className="text-gray-700">{generatedContent.description}</p>
+//             <Button onClick={() => copyToClipboard(generatedContent.description)} className="mt-2">
+//               Copy
+//             </Button>
+//           </Card>
+
+//           <Card title="Tags (Chinese)">
+//             <p className="text-gray-700">{generatedContent.tags}</p>
+//             <Button onClick={() => copyToClipboard(generatedContent.tags)} className="mt-2">
+//               Copy
+//             </Button>
+//           </Card>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default VideoTranscriptProcessor;
