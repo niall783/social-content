@@ -1,7 +1,7 @@
 'use client'
 
 import FileUploader from './components/FileUploader';
-import FileList from './components/FileList';
+import FileList from './components/FileList2';
 
 
 export default function Home() {
