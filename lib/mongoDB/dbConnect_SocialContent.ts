@@ -32,7 +32,9 @@ async function dbConnect(): Promise<Connection> {
   if (!cached.promise) {
     const opts: ConnectOptions = {
       bufferCommands: false,
-      dbName: DEVELOPMENT === 'true' ? 'DevDB_Transcriptions' : 'ProdDB_Transcriptions',
+      // dbName: DEVELOPMENT === 'true' ? 'DevDB_Transcriptions' : 'ProdDB_Transcriptions',
+      dbName: 'ProdDB_SocialContent',
+
     };
 
     cached.promise = mongoose.createConnection(MONGODB_URI ?? '', opts).asPromise();

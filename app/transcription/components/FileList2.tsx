@@ -91,7 +91,7 @@ const FileList: React.FC = () => {
     setTranscribing(file.key);
     try {
       const response = await axios.post('/api/transcribe-and-save', { fileKey: file.key, timestamp: Date.now() });
-      alert(`Transcription completed and saved. Transcription ID: ${response.data.transcriptionId}`);
+      alert(`Transcription completed and saved. Transcription ID: ${response.data.uuid}`);
       refreshData();
     } catch (err) {
       console.error('Error transcribing file:', err);
