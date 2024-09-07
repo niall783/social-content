@@ -1,5 +1,5 @@
 'use client'
-//file uploader component
+
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { CloudArrowUpIcon, XCircleIcon } from '@heroicons/react/24/solid';
@@ -93,6 +93,20 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     }
   };
 
+  const isAudioFile = (file: File): boolean => {
+    return file.type.startsWith('audio/') || file.name.match(/\.(mp3|wav|ogg|m4a)$/i) !== null;
+  };
+
+  const transcribeAudio = async (fileKey: string) => {
+    try {
+      const response = await axios.post('/api/transcribe-and-save', { fileKey, timestamp: Date.now() });
+      console.log(`Transcription completed and saved. Transcription ID: ${response.data.uuid}`);
+    } catch (error) {
+      console.error('Error transcribing file:', error);
+      setErrorMessage(`Error transcribing file: ${(error as Error).message}`);
+    }
+  };
+
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       setErrorMessage('Please select files to upload.');
@@ -125,6 +139,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             }));
           }
         });
+
+        if (isAudioFile(file)) {
+          await transcribeAudio(objectKey);
+        }
       } catch (error) {
         console.error('Upload error for file:', file.name, error);
         setErrorMessage(`Error uploading file ${file.name}: ${(error as Error).message}`);
@@ -159,7 +177,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       <div className="flex flex-col space-y-1.5 p-6 pb-4">
         <h3 className="text-2xl md:text-3xl font-semibold tracking-tight">Upload your Files</h3>
         <p className="text-sm text-gray-500">
-          Drag and drop your files here or click the button below to browse files.
+          Drag and drop your files here or click the button below to browse files. Audio files will be automatically transcribed.
         </p>
       </div>
       <div className="px-6 flex flex-col gap-3">
@@ -207,6 +225,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             <div className="flex justify-between items-center">
               <p className="text-gray-700 text-sm flex-grow truncate">
                 {file.name} ({formatBytes(file.size)})
+                {isAudioFile(file) && " (Will be transcribed)"}
               </p>
               {uploading ? (
                 uploadProgress[file.name] && (
