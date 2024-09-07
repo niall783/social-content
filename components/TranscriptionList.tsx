@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import { ClipboardIcon, ChevronDownIcon, ChevronUpIcon, TrashIcon, ArrowPathIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
